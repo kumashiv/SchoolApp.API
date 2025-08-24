@@ -14,9 +14,9 @@ namespace SchoolApp.API.Data.Models
         public bool IsRevoked { get; set; }
         public DateTime DateAdded{ get; set; }
         public DateTime DateExpire { get; set; }
-        public string userId { get; set; }
+        public string UserId { get; set; }
 
-        [ForeignKey(nameof(userId))]
+        [ForeignKey(nameof(UserId))]
         public ApplicationUser User { get; set; }
     }
 }
