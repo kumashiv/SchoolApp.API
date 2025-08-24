@@ -39,6 +39,24 @@ namespace SchoolApp.API
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(ConnectionString));
 
 
+            //2.10 
+            var tokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JWT:Secret"])),
+
+                ValidateIssuer = true,
+                ValidIssuer = Configuration["JWT:Issuer"],
+
+                ValidateAudience = true,
+                ValidAudience = Configuration["JWT:Audience"],
+
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero
+            };
+            services.AddSingleton(tokenValidationParameters);
+
+
             //2.2 Add Identity
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
@@ -51,22 +69,12 @@ namespace SchoolApp.API
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-            // Also Add JWT Bearer
+            // Also Add JWT Bearer  + Modified at 2.10
             .AddJwtBearer(options =>
             {
                 options.SaveToken = true;
                 options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters()
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration["JWT:Secret"])),
-
-                    ValidateIssuer = true,
-                    ValidIssuer = Configuration["JWT:Issuer"],
-
-                    ValidateAudience = true,
-                    ValidAudience = Configuration["JWT:Audience"]
-                };
+                options.TokenValidationParameters = tokenValidationParameters;
             });
 
 
