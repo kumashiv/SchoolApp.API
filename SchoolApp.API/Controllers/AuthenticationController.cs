@@ -57,5 +57,24 @@ namespace SchoolApp.API.Controllers
             if (result.Succeeded) return Ok("User Created");
             return BadRequest("User could not be created");
         }
+
+
+        [HttpPost("login-user")]
+        public async Task<IActionResult> Login([FromBody]LoginVM loginVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Please provide all required details");
+            }
+
+            var userExists = await _userManager.FindByEmailAsync(loginVM.EmailAddress);
+            if(userExists != null && await _userManager.CheckPasswordAsync(userExists, loginVM.Password))
+            {
+                return Ok("User Signed in");
+            }
+            return Unauthorized();
+
+
+        }
     }
 }
